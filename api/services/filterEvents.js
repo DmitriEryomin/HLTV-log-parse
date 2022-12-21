@@ -1,8 +1,16 @@
+import FakeDB from './fakeDB.js';
+
 const EventNames = {
   ROUND_START: 'World triggered "Round_Start"',
   ROUND_END: 'World triggered "Round_End"',
   GAME_OVER: /Game Over:/,
   KILLED: /killed "/,
+};
+
+const Filters = {
+  SCORE: 'score',
+  ROUND_AVERAGE: 'round_average',
+  KILLS: 'kills',
 };
 
 const PlayerNickName = /^\".+?\<\d{1,}\>/;
@@ -11,7 +19,8 @@ const Score = /[0-9]{1,2}:[0-9]{1,2}/;
 
 const ONE_SECOND = 1000;
 
-export function getRoundAverageLength(eventsData) {
+export async function getRoundAverageLength() {
+  const eventsData = await FakeDB.getData();
   let isRoundStarted = false;
   let roundStartTime = null;
 
@@ -55,7 +64,8 @@ export function getRoundAverageLength(eventsData) {
   return `${roundAverageLength} seconds`;
 }
 
-export function getKillsPerPlayer(eventsData) {
+export async function getKillsPerPlayer() {
+  const eventsData = await FakeDB.getData();
   const kills = {};
   for (const events of Object.values(eventsData)) {
     for (const gameEvent of events) {
@@ -73,7 +83,8 @@ export function getKillsPerPlayer(eventsData) {
   return kills;
 }
 
-export function getMatchScore(eventsData) {
+export async function getMatchScore() {
+  const eventsData = await FakeDB.getData();
   const events = Object.values(eventsData);
   let score = '';
 
@@ -100,4 +111,31 @@ export function getMatchScore(eventsData) {
   }
 
   return score;
+}
+
+export async function getStatisticsByFilter(filter) {
+  if (filter === Filters.SCORE) {
+    const matchScore = await getMatchScore();
+    return { matchScore };
+  }
+
+  if (filter === Filters.ROUND_AVERAGE) {
+    const roundAverageLength = await getRoundAverageLength();
+    return { roundAverageLength };
+  }
+
+  if (filter === Filters.KILLS) {
+    const killsPerPlayer = await getKillsPerPlayer();
+    return { killsPerPlayer };
+  }
+
+  if (filter === '') {
+    return {
+      roundAverageLength: await getRoundAverageLength(),
+      killsPerPlayer: await getKillsPerPlayer(),
+      matchScore: await getMatchScore(),
+    };
+  }
+
+  throw Error("Filter doesn't exist");
 }

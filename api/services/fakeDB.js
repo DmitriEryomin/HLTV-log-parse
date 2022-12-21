@@ -1,6 +1,6 @@
 import { readLargeFile } from './readLargeFile.js';
 
-export class FakeDB {
+class FakeDB {
   constructor() {
     this.data = {};
   }
@@ -20,7 +20,11 @@ export class FakeDB {
     }
   }
 
-  getData() {
-    return this.data;
+  async getData() {
+    return await this.data;
   }
 }
+
+const db = new FakeDB();
+
+export default db;
