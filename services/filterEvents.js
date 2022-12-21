@@ -48,10 +48,11 @@ export function getRoundAverageLength(eventsData) {
     }
   }
 
-  return Math.floor(
+  const roundAverageLength = Math.floor(
     roundDurations.reduce((acc, duration) => acc + duration, 0) /
       roundDurations.length
   );
+  return `${roundAverageLength} seconds`;
 }
 
 export function getKillsPerPlayer(eventsData) {

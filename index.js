@@ -1,4 +1,6 @@
-import { readLargeFile } from './services/readLargeFile.js';
+import fastify from 'fastify';
+
+import { FakeDB } from './services/fakeDB.js';
 
 import {
   getRoundAverageLength,
@@ -6,25 +8,27 @@ import {
   getMatchScore,
 } from './services/filterEvents.js';
 
-(async () => {
-  const data = {};
+const server = fastify({ logger: true });
+const db = new FakeDB();
 
-  await readLargeFile('./NAVIvsVitaGF-Nuke.txt', (line) => {
-    const [time, event] = line.split(/\d{2}: /);
-    if (data[time]) {
-      data[time].push(event);
-    } else {
-      data[time] = [event];
-    }
-  });
+server.get('/statistics', (_, reply) => {
+  const data = db.getData();
+  const payload = {
+    roundAverageLength: getRoundAverageLength(data),
+    killsPerPlayer: getKillsPerPlayer(data),
+    matchScore: getMatchScore(data),
+  };
+  reply.send(payload);
+});
 
-  const roundAverageLength = getRoundAverageLength(data);
-  const killsPerPlayer = getKillsPerPlayer(data);
-  const matchScore = getMatchScore(data);
+async function start() {
+  try {
+    await db.initialize();
+    await server.listen({ port: 3000 });
+  } catch (error) {
+    server.log.error(err);
+    process.exit(1);
+  }
+}
 
-  console.log({
-    roundAverageLength: `${roundAverageLength} seconds`,
-    killsPerPlayer,
-    matchScore,
-  });
-})();
+start();

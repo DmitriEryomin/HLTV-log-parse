@@ -4,10 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm start",
+    "start": "node ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "dmitri.eryomin@gmail.com",
   "license": "ISC",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "fastify": "^4.10.2"
+  }
 }
