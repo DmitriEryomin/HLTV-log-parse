@@ -1,23 +1,48 @@
-<select bind:value={selected}>
-  {#each options as option}
-    <option value={option}>{option.text}</option>
-  {/each}
-</select>
-<button on:click={getStatistics}>Get {selected.text}</button>
+<formfield>
+  <select bind:value={selected}>
+    {#each options as option}
+      <option value={option}>{option.text}</option>
+    {/each}
+  </select>
+  <button on:click={getStatistics}>Get {selected.text}</button>
+</formfield>
 
 <div class="content">
   {#if content !== null}
     {#if content.matchScore}
-      <MatchScore />
+      <MatchScore score={content.matchScore} />
     {/if}
     {#if content.roundAverageLength}
-      <RoundAverage />
+      <RoundAverage round={content.roundAverageLength} />
     {/if}
     {#if content.killsPerPlayer}
-      <KillsPerPlayer />
+      <KillsPerPlayer kills={content.killsPerPlayer} />
     {/if}
   {/if}
 </div>
+
+<style>
+  formfield {
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  button {
+    outline: none;
+    padding: 4px 8px;
+    background-color: #66bb6a;
+    border-radius: 4px;
+    border: 1px solid #388e3c;
+  }
+  button:hover {
+    cursor: pointer;
+    background-color: #388e3c;
+  }
+</style>
 
 <script>
   import KillsPerPlayer from './KillsPerPlayer.svelte';
